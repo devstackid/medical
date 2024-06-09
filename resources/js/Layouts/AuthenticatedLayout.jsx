@@ -191,6 +191,63 @@ export default function Authenticated(props) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        {auth.user.role &&
+                                    auth.user.role.role === "admin" && (
+                                        <>
+                                            <ResponsiveNavLink
+                                                href={route("users")}
+                                                active={route().current(
+                                                    "users"
+                                                )}
+                                            >
+                                                Data Pengguna
+                                            </ResponsiveNavLink>
+                                            <ResponsiveNavLink
+                                                href={route("doctors")}
+                                                active={route().current(
+                                                    "doctors"
+                                                )}
+                                            >
+                                                Data Dokter
+                                            </ResponsiveNavLink>
+                                        </>
+                                    )}
+
+                                {auth.user.role &&
+                                    auth.user.role.role === "dokter" && (
+                                        <>
+                                            <ResponsiveNavLink
+                                                href={route("pasien")}
+                                                active={route().current(
+                                                    "pasien"
+                                                )}
+                                            >
+                                                Data Konsultasi
+                                            </ResponsiveNavLink>
+                                        </>
+                                    )}
+
+                                {auth.user.role &&
+                                    auth.user.role.role === "pasien" && (
+                                        <>
+                                            <ResponsiveNavLink
+                                                href={route("konsultasi")}
+                                                active={route().current(
+                                                    "konsultasi"
+                                                )}
+                                            >
+                                                Konsultasi
+                                            </ResponsiveNavLink>
+                                            <ResponsiveNavLink
+                                                href={route("riwayat")}
+                                                active={route().current(
+                                                    "riwayat"
+                                                )}
+                                            >
+                                                Riwayat Konsultasi
+                                            </ResponsiveNavLink>
+                                        </>
+                                    )}
                     </div>
 
                     <div className="pt-4 pb-1 border-t border-gray-200">

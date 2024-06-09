@@ -38,26 +38,26 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/users', [UserController::class, 'index'])->name('users');
-    Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
-    Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
-    Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+    Route::get('/users', [UserController::class, 'index'])->name('users')->middleware('checkRole:admin');
+    Route::post('/user/store', [UserController::class, 'store'])->name('user.store')->middleware('checkRole:admin');
+    Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update')->middleware('checkRole:admin');
+    Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete')->middleware('checkRole:admin');
 
-    Route::get('/dokter', [DoctorController::class, 'index'])->name('doctors');
-    Route::post('/doctor/store', [DoctorController::class, 'store'])->name('doctor.store');
-    Route::post('/doctor/update/{id}', [DoctorController::class, 'update'])->name('doctor.update');
-    Route::delete('/doctor/delete/{id}', [DoctorController::class, 'destroy'])->name('doctor.delete');
+    Route::get('/dokter', [DoctorController::class, 'index'])->name('doctors')->middleware('checkRole:admin');
+    Route::post('/doctor/store', [DoctorController::class, 'store'])->name('doctor.store')->middleware('checkRole:admin');
+    Route::post('/doctor/update/{id}', [DoctorController::class, 'update'])->name('doctor.update')->middleware('checkRole:admin');
+    Route::delete('/doctor/delete/{id}', [DoctorController::class, 'destroy'])->name('doctor.delete')->middleware('checkRole:admin');
 
-    Route::get('/pasien', [ConsultationController::class, 'index'])->name('pasien');
-    Route::post('/pasien/update/{id}', [ConsultationController::class, 'update'])->name('pasien.update');
-    Route::delete('/pasien/delete/{id}', [ConsultationController::class, 'destroy'])->name('pasien.delete');
+    Route::get('/pasien', [ConsultationController::class, 'index'])->name('pasien')->middleware('checkRole:dokter');
+    Route::post('/pasien/update/{id}', [ConsultationController::class, 'update'])->name('pasien.update')->middleware('checkRole:dokter');
+    Route::delete('/pasien/delete/{id}', [ConsultationController::class, 'destroy'])->name('pasien.delete')->middleware('checkRole:dokter');
 
-    Route::get('/konsultasi', [ConsultationController::class, 'consultation'])->name('konsultasi');
-    Route::post('/konsultasi/store', [ConsultationController::class, 'storeConsultation'])->name('konsultasi.store');
-    Route::post('/konsultasi/update/{id}', [ConsultationController::class, 'updateConsultation'])->name('konsultasi.update');
-    Route::delete('/konsultasi/delete/{id}', [ConsultationController::class, 'destroyConsultation'])->name('konsultasi.delete');
+    Route::get('/konsultasi', [ConsultationController::class, 'consultation'])->name('konsultasi')->middleware('checkRole:pasien');
+    Route::post('/konsultasi/store', [ConsultationController::class, 'storeConsultation'])->name('konsultasi.store')->middleware('checkRole:pasien');
 
-    Route::get('/riwayat', [ConsultationController::class, 'historyConsultation'])->name('riwayat');
+    Route::get('/riwayat', [ConsultationController::class, 'historyConsultation'])->name('riwayat')->middleware('checkRole:pasien');
+    Route::post('/riwayat/update/{id}', [ConsultationController::class, 'updateRiwayat'])->name('riwayat.update')->middleware('checkRole:pasien');
+    Route::delete('/riwayat/delete/{id}', [ConsultationController::class, 'destroyRiwayat'])->name('riwayat.delete')->middleware('checkRole:pasien');
 
 });
 
