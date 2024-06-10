@@ -103,22 +103,57 @@ class ConsultationController extends Controller
                 return redirect()->back()->with('error', 'Gagal mengirimkan data konsultasi. Silakan coba lagi.');
             }
 
-
-
-
-        
         
     }
 
-    public function updateConsultation(){
-
-    }
-
-    public function destroyConsultation(){
-
-    }
+    
 
     public function historyConsultation(){
+        $idUserLogin = auth()->user()->id;
+        $doctors = Doctor::with(['specialist', 'user'])->get();
+        $consultationData = Consultation::with('doctor')->where('user_id', $idUserLogin)->orderBy('updated_at', 'desc')->get();
+        return Inertia::render('History', [
+            'doctors' => $doctors,
+            'consultationData' => $consultationData,
+            'auth' => [
+                'user' => auth()->user()->load('role'), // Load the role for the authenticated user
+            ],
+        ]);
+    }
 
+    public function updateRiwayat(Request $request, $id){
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'telepon' => 'required|string|min:5|max:30',
+            'alamat' => 'required|string|min:5|max:255',
+            'usia' => 'required|string|min:1|max:50',
+            'jenis_kelamin' => 'required|exists:consultations,jenis_kelamin',
+            'keluhan' => 'required|string',
+            'dokter_id' => 'required|exists:doctors,id',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $consultations = Consultation::findOrFail($id);
+        $consultations->nama_lengkap = $request->nama_lengkap;
+        $consultations->telepon = $request->telepon;
+        $consultations->alamat = $request->alamat;
+        $consultations->usia = $request->usia;
+        $consultations->jenis_kelamin = $request->jenis_kelamin;
+        $consultations->keluhan = $request->keluhan;
+        $consultations->dokter_id = $request->dokter_id;
+        $consultations->user_id = $request->user_id;
+        
+        $consultations->save();
+
+        return redirect()->back()->with('message', 'Berhasil melakukan perubahan.');
+    }
+
+    public function destroyRiwayat($id){
+        $consultations = Consultation::findOrFail($id);       
+
+        $consultations->delete();
+    
+
+        return redirect()->back()->with('message', 'Berhasil menghapus data konsultasi');
     }
 }

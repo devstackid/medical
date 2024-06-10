@@ -53,9 +53,11 @@ class UserController extends Controller
         if($validated['role_id'] == $doctorRole->id){
             // ambil data user yang baru saja ditambahkan
             $recentUser = User::where('email', $validated['email'])->first();
+            $spesialistDefault = '3';
             
             $doctor = new Doctor();
             $doctor->user_id = $recentUser->id;
+            $doctor->specialist_id = $spesialistDefault;
             $doctor->save();
         }
 

@@ -35,6 +35,11 @@ class DatabaseSeeder extends Seeder
             'role' => 'dokter'
         ]);
 
+        Role::create([
+            'id' => 3,
+            'role' => 'pasien'
+        ]);
+
 
         User::create([
             'id' => 1,
@@ -53,6 +58,11 @@ class DatabaseSeeder extends Seeder
         Specialist::create([
             'id' => 2,
             'specialist' => 'kulit',
+        ]);
+
+        Specialist::create([
+            'id' => 3,
+            'specialist' => 'tidak ada',
         ]);
 
 

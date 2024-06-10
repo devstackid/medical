@@ -1,8 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 import { useEffect, useState, useRef } from "react";
-export default function Patients(props) {
-    const { errors } = usePage().props;
+export default function consultations(props) {
+    const { errors, auth } = usePage().props;
 
     const [values, setValues] = useState({
         nama_lengkap: "",
@@ -14,40 +14,41 @@ export default function Patients(props) {
         solusi: "",
         status: "",
         dokter_id: "",
+        user_id: props.auth.user.id,
     });
 
     const [isNotif, setIsNotif] = useState(false);
     const [search, setSearch] = useState("");
-    const patientData = props.patientData;
-    const [filteredData, setFilteredData] = useState(patientData);
+    const consultationData = props.consultationData;
+    const [filteredData, setFilteredData] = useState(consultationData);
 
-    const [editPatientId, setEditPatientId] = useState(null);
+    const [editConsultationId, seteditConsultationId] = useState(null);
 
     useEffect(() => {
         setFilteredData(
-            patientData.filter((patient) => {
+            consultationData.filter((consultation) => {
                 const searchTerm = search.toLowerCase();
                 return (
-                    (patient.nama_lengkap &&
-                        patient.nama_lengkap
+                    (consultation.nama_lengkap &&
+                        consultation.nama_lengkap
                             .toLowerCase()
                             .includes(searchTerm)) ||
-                    (patient.telepon &&
-                        patient.telepon.toLowerCase().includes(searchTerm)) ||
-                    (patient.usia &&
-                        patient.usia.toLowerCase().includes(searchTerm)) ||
-                    (patient.jenis_kelamin &&
-                        patient.jenis_kelamin
+                    (consultation.telepon &&
+                        consultation.telepon.toLowerCase().includes(searchTerm)) ||
+                    (consultation.usia &&
+                        consultation.usia.toLowerCase().includes(searchTerm)) ||
+                    (consultation.jenis_kelamin &&
+                        consultation.jenis_kelamin
                             .toLowerCase()
                             .includes(searchTerm)) ||
-                    (patient.keluhan &&
-                        patient.keluhan.toLowerCase().includes(searchTerm)) ||
-                    (patient.status &&
-                        patient.status.toLowerCase().includes(searchTerm))
+                    (consultation.keluhan &&
+                        consultation.keluhan.toLowerCase().includes(searchTerm)) ||
+                    (consultation.status &&
+                        consultation.status.toLowerCase().includes(searchTerm))
                 );
             })
         );
-    }, [search, patientData]);
+    }, [search, consultationData]);
 
     function handleChange(e) {
         const key = e.target.id;
@@ -61,7 +62,7 @@ export default function Patients(props) {
     function handleSubmit(e) {
         e.preventDefault();
         setIsNotif(false); // Set notifikasi menjadi false di awal
-        const url = `/pasien/update/${editPatientId}`;
+        const url = `/riwayat/update/${editConsultationId}`;
 
         router.post(url, values, {
             onSuccess: () => {
@@ -72,9 +73,8 @@ export default function Patients(props) {
                     usia: "",
                     jenis_kelamin: "",
                     keluhan: "",
-                    solusi: "",
-                    status: "",
                     dokter_id: "",
+                    user_id: props.auth.user.id,
                 });
                 setIsNotif(true); // Tampilkan notifikasi jika berhasil
                 document.getElementById("my_modal_1").close();
@@ -85,26 +85,25 @@ export default function Patients(props) {
         });
     }
 
-    function handleEdit(patient) {
+    function handleEdit(consultation) {
         setValues({
-            nama_lengkap: patient.nama_lengkap,
-            telepon: patient.telepon,
-            alamat: patient.alamat,
-            usia: patient.usia,
-            jenis_kelamin: patient.jenis_kelamin,
-            keluhan: patient.keluhan,
-            solusi: patient.solusi,
-            status: patient.status,
-            dokter_id: patient.dokter_id,
+            nama_lengkap: consultation.nama_lengkap,
+            telepon: consultation.telepon,
+            alamat: consultation.alamat,
+            usia: consultation.usia,
+            jenis_kelamin: consultation.jenis_kelamin,
+            keluhan: consultation.keluhan,
+            dokter_id: consultation.dokter_id,
+            user_id: consultation.user_id,
         });
-        setEditPatientId(patient.id);
+        seteditConsultationId(consultation.id);
         document.getElementById("my_modal_1").showModal();
     }
 
-    function handleDelete(patientId) {
+    function handleDelete(consultationId) {
         if (confirm("Apakah Anda yakin ingin menghapus data konsultasi ini?")) {
             router.post(
-                `/pasien/delete/${patientId}`,
+                `/riwayat/delete/${consultationId}`,
                 {
                     _method: "delete",
                 },
@@ -119,12 +118,10 @@ export default function Patients(props) {
             );
         }
     }
-
     const formatDate = (date) => {
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString('id-ID', options);
     };
-
 
     return (
         <AuthenticatedLayout user={props.auth.user}>
@@ -132,11 +129,11 @@ export default function Patients(props) {
 
             <div className="py-12 relative w-full">
                 <div className="w-full px-3 lg:px-8">
-                    <div className="flex items-start justify-between mb-3 lg:px-12 px-0">
+                    <div className="flex items-start justify-between mb-3">
                         <h1 className="text-sm font-bold text-black">
-                            Data Konsultasi Pasien{" "}
+                            Data Riwayat Konsultasi{" "}
                             <span className="block text-slate-700 font-normal">
-                                Anda dapat mengelola data konsultasi pasien
+                                Informasi konsultasi anda
                             </span>
                         </h1>
                     </div>
@@ -165,7 +162,7 @@ export default function Patients(props) {
                         </div>
                     )}
                     <hr />
-                    {props.patientData.length > 0 ? (
+                    {props.consultationData.length > 0 ? (
                         <div className="overflow-x-auto mt-10">
                             <div className="w-full lg:flex justify-end">
                                 <div className="mb-4 overflow-hidden rounded max-w-xs">
@@ -212,27 +209,27 @@ export default function Patients(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredData.map((patient, i) => {
+                                    {filteredData.map((consultation, i) => {
                                         return (
                                             <tr key={i}>
                                                 <td className="text-center">
                                                     {i + 1}
                                                 </td>
-                                                <td>{patient.nama_lengkap}</td>
-                                                <td>{patient.telepon}</td>
-                                                <td>{patient.alamat}</td>
-                                                <td>{patient.usia}</td>
-                                                <td>{patient.jenis_kelamin}</td>
-                                                <td>{patient.keluhan}</td>
-                                                <td className="whitespace-nowrap">{patient.solusi}</td>
-                                                <td className="bg-yellow-400 text-black text-center">{patient.status}</td>
-                                                <td>{formatDate(patient.created_at)}</td>
-                                                <td>{formatDate(patient.updated_at)}</td>
+                                                <td>{consultation.nama_lengkap}</td>
+                                                <td>{consultation.telepon}</td>
+                                                <td>{consultation.alamat}</td>
+                                                <td>{consultation.usia}</td>
+                                                <td>{consultation.jenis_kelamin}</td>
+                                                <td>{consultation.keluhan}</td>
+                                                <td className="whitespace-nowrap">{consultation.solusi}</td>
+                                                <td className="bg-yellow-400 text-black text-center">{consultation.status}</td>
+                                                <td>{formatDate(consultation.created_at)}</td>
+                                                <td>{formatDate(consultation.updated_at)}</td>
 
                                                 <td className="flex items-center gap-2">
                                                     <button
                                                         onClick={() =>
-                                                            handleEdit(patient)
+                                                            handleEdit(consultation)
                                                         }
                                                         className="btn btn-warning btn-sm px-4"
                                                     >
@@ -241,7 +238,7 @@ export default function Patients(props) {
                                                     <button
                                                         onClick={() =>
                                                             handleDelete(
-                                                                patient.id
+                                                                consultation.id
                                                             )
                                                         }
                                                         className="btn btn-error btn-sm px-4"
@@ -265,7 +262,7 @@ export default function Patients(props) {
                 {/* modal tambah dan edit data */}
                 <dialog id="my_modal_1" className="modal">
                     <div className="modal-box">
-                        <h1 className="text-sm font-bold text-black">
+                        <h1 className="text-sm font-bold text-black mb-5">
                             Edit Data Konsultasi
                             <span className="block text-xs font-normal">
                                 Silahkan isi form dibawah untuk mengubah data
@@ -284,9 +281,8 @@ export default function Patients(props) {
                                         usia: "",
                                         jenis_kelamin: "",
                                         keluhan: "",
-                                        solusi: "",
-                                        status: "",
                                         dokter_id: "",
+                                        user_id: props.auth.user.id,
                                     });
                                     setIsEdit(false);
                                     document
@@ -302,140 +298,146 @@ export default function Patients(props) {
                             className="w-full flex flex-col gap-2"
                         >
                             <input
-                                id="nama_lengkap"
-                                name="nama_lengkap"
-                                value={values.nama_lengkap}
-                                onChange={handleChange}
-                                type="text"
-                                placeholder="Nama lengkap pasien"
-                                readOnly
-                                className="input input-bordered bg-gray-50 placeholder:text-sm w-full mt-5"
-                            />
-                            {errors.nama_lengkap && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.nama_lengkap}
-                                </div>
-                            )}
-                            <input
-                                id="telepon"
-                                name="telepon"
-                                value={values.telepon}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Nomor telepon"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.telepon && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.telepon}
-                                </div>
-                            )}
-                            <input
-                                id="alamat"
-                                name="alamat"
-                                value={values.alamat}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Alamat"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.alamat && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.alamat}
-                                </div>
-                            )}
-                            <input
-                                id="usia"
-                                name="usia"
-                                value={values.usia}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Usia"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.usia && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.usia}
-                                </div>
-                            )}
+                            id="nama_lengkap"
+                            name="nama_lengkap"
+                            value={values.nama_lengkap}
+                            onChange={handleChange}
+                            type="text"
+                            placeholder="Nama Lengkap"
+                            className="input input-bordered placeholder:text-sm w-full"
+                        />
+                        {errors.nama_lengkap && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.nama_lengkap}
+                            </div>
+                        )}
 
-                            <input
-                                id="jenis_kelamin"
-                                name="jenis_kelamin"
-                                value={values.jenis_kelamin}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Jenis Kelamin"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.jenis_kelamin && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.jenis_kelamin}
-                                </div>
+                        <input
+                            id="telepon"
+                            name="telepon"
+                            value={values.telepon}
+                            onChange={handleChange}
+                            type="number"
+                            placeholder="Nomor Telepon"
+                            className="input input-bordered placeholder:text-sm w-full"
+                        />
+                        {errors.telepon && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.telepon}
+                            </div>
+                        )}
+
+                        <input
+                            id="alamat"
+                            name="alamat"
+                            value={values.alamat}
+                            onChange={handleChange}
+                            type="text"
+                            placeholder="Alamat"
+                            className="input input-bordered placeholder:text-sm w-full"
+                        />
+                        {errors.alamat && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.alamat}
+                            </div>
+                        )}
+
+                        <input
+                            id="usia"
+                            name="usia"
+                            value={values.usia}
+                            onChange={handleChange}
+                            type="number"
+                            placeholder="Usia"
+                            className="input input-bordered placeholder:text-sm w-full"
+                        />
+                        {errors.usia && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.usia}
+                            </div>
+                        )}
+
+                        <select
+                            id="jenis_kelamin"
+                            name="jenis_kelamin"
+                            value={values.jenis_kelamin}
+                            onChange={handleChange}
+                            className="select select-bordered w-full"
+                        >
+                            <option disabled value="">
+                                Jenis Kelamin
+                            </option>
+
+                            <option value="laki-laki">Laki - Laki</option>
+                            <option value="perempuan">Perempuan</option>
+                        </select>
+
+                        {errors.jenis_kelamin && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.jenis_kelamin}
+                            </div>
+                        )}
+
+                        <select
+                            id="dokter_id"
+                            name="dokter_id"
+                            value={values.dokter_id}
+                            onChange={handleChange}
+                            className="select select-bordered w-full"
+                        >
+                            <option disabled value="">
+                                Pilih Dokter Spesialis
+                            </option>
+                            {props.doctors && props.doctors.length > 0 ? (
+                                props.doctors.map((doctor, i) => (
+                                    <option value={doctor.id} key={i}>
+                                        {doctor.user.name} -{" "}
+                                        {doctor.specialist.specialist}
+                                    </option>
+                                ))
+                            ) : (
+                                <option disabled>
+                                    Saat ini belum ada dokter yang tersedia
+                                </option>
                             )}
+                        </select>
 
-                            <input
-                                id="keluhan"
-                                name="keluhan"
-                                value={values.keluhan}
-                                onChange={handleChange}
-                                type="text"
-                                placeholder="Keluhan"
-                                readOnly
-                                className="input input-bordered bg-gray-50 placeholder:text-sm w-full"
-                            />
-                            {errors.keluhan && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.keluhan}
-                                </div>
-                            )}
+                        {errors.dokter_id && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.dokter_id}
+                            </div>
+                        )}
 
-                            <span className="block text-xs font-medium text-black mt-2">Solusi</span>
+                        <textarea
+                            id="keluhan"
+                            name="keluhan"
+                            value={values.keluhan}
+                            onChange={handleChange}
+                            className="textarea textarea-accent"
+                            placeholder="Keluhan yang ingin anda konsultasikan"
+                        ></textarea>
+                        {errors.keluhan && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.keluhan}
+                            </div>
+                        )}
 
-                            <textarea
-                                id="solusi"
-                                name="solusi"
-                                value={values.solusi}
-                                onChange={handleChange}
-                                className="textarea textarea-accent"
-                                placeholder="Solusi"
-                            ></textarea>
-                            {errors.solusi && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.solusi}
-                                </div>
-                            )}
+                        
 
-
-                            <input
-                                id="status"
-                                name="status"
-                                value={values.status}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Status Konsultasi"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.status && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.status}
-                                </div>
-                            )}
-
-                            <input
-                                id="dokter_id"
-                                name="dokter_id"
-                                value={values.dokter_id}
-                                onChange={handleChange}
-                                type="hidden"
-                                placeholder="Dokter id"
-                                className="input input-bordered placeholder:text-sm w-full"
-                            />
-                            {errors.dokter_id && (
-                                <div className="text-xs font-medium text-red-500">
-                                    {errors.dokter_id}
-                                </div>
-                            )}
+                        <input
+                            id="user_id"
+                            name="user_id"
+                            value={values.user_id}
+                            onChange={handleChange}
+                            type="hidden"
+                            placeholder="User id"
+                            className="input input-bordered placeholder:text-sm w-full"
+                        />
+                        {errors.user_id && (
+                            <div className="text-xs font-medium text-red-500">
+                                {errors.user_id}
+                            </div>
+                        )}
 
                             
 

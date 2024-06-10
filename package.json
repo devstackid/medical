@@ -20,6 +20,8 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
-        "daisyui": "^4.11.1"
+        "chart.js": "^4.4.3",
+        "daisyui": "^4.11.1",
+        "react-chartjs-2": "^5.2.0"
     }
 }
