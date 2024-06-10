@@ -10,15 +10,11 @@ function Home(props) {
         <Navbar />
         {/* header section */}
         <div className='flex items-center justify-center h-[80vh] px-10'>
-            <h1 className='text-center text-5xl font-black text-black'>Selamat Datang di Devstack.id <span className='block mt-2 text-sm font-normal text-slate-600'>Pembuatan website professional, cepat dan terpercaya</span></h1>
+            <h1 className='text-center text-5xl font-black text-black'>Selamat Datang di Dokterku <span className='block mt-2 text-sm font-normal text-slate-600'>Dokterku adalah sebuah aplikasi layanan konsultasi online gratis yag terhubung dengan para dokter spesialis di seluruh indonesia</span></h1>
         </div>
-        {/* main section */}
-        <div className='w-full pt-20'>
-          <h1 className='text-base font-bold text-black text-center'>Tentang Kami 
-          <p className='block text-sm font-medium text-slate-700'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quisquam nobis impedit, placeat enim voluptatem hic rem odit similique quam atque.</p></h1>
-
+        <div className='fixed bottom-0 left-0 right-0 py-5 text-center text-xs font-normal text-black'>
+          Copyright, 2024. @devstack.id. All Right Reserved.
         </div>
-        {/* footer */}
         
     </>
   )
